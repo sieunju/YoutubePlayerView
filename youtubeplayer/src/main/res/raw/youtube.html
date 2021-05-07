@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+    <style type="text/css">
+    html,
+    body {
+        height: 100% !important;
+        width: 100% !important;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        position: fixed;
+    }
+</style>
+
+    <head>
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+    </head>
+
+    <body>
+        <div id="player"></div>
+    </body>
+    <script>
+
+    var tag = document.createElement('script')
+    tag.src = "https://www.youtube.com/iframe_api"
+    var firstScriptTag = document.getElementsByTagName('script')[0]
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag)
+
+    var bridge = window.youtubePlayerBridge // Android Web Java Interface
+    var player
+    var intervalId
+
+    function onYouTubeIframeAPIReady() {
+        player = new YT.Player('player', {
+            width: '100%',
+            height: '100%',
+            events: {
+                onReady: function (evt) {
+                    console.log("onPlayerReady")
+                    bridge.onReady()
+                },
+                onStateChange: function (evt) {
+                    onStateChanged(evt.data)
+                    bridge.onStateChanged(evt.data)
+                },
+                onPlaybackQualityChange: function (evt) {
+                    console.log("onPlaybackQualityChange " + evt.data)
+                    bridge.onQualityChanged(evt.data)
+                },
+                onError: function (evt) {
+                    console.log("onError " + evt.data)
+                    bridge.onError(evt.data)
+                }
+            },
+            playerVars: <<playerOptions>>
+        });
+    }
+
+    function onStateChanged(state) {
+        console.log("onStateChanged " + state)
+        switch (state) {
+            case YT.PlayerState.PLAYING:
+                bridge.onDuration(player.getCurrentTime(), player.getDuration())
+                break;
+        }
+    }
+
+    /// [s] App Delegate Function
+
+    function cueVideo(videoId, startSec) {
+        cueVideo(videoId, startSec, "default")
+    }
+
+    function cueVideo(videoId, startSec, quality) {
+        player.cueVideoById({
+            'videoId': videoId,
+            'startSeconds': startSec,
+            'suggestedQuality': quality
+        })
+    }
+
+    function loadVideo(videoId, startSec) {
+        loadVideo(videoId, startSec, "default")
+    }
+
+    function loadVideo(videoId, startSec, quality) {
+        player.loadVideoById({
+            'videoId': videoId,
+            'startSeconds': startSec,
+            'suggestedQuality': quality
+        })
+    }
+
+    function playVideo() {
+        player.playVideo()
+    }
+
+    function stopVideo() {
+        player.stopVideo()
+    }
+
+    function pauseVideo() {
+        player.pauseVideo()
+    }
+
+    function currentTime() {
+        return player.getCurrentTime()
+    }
+
+    function seekTo(sec) {
+        player.seekTo(sec, true)
+    }
+
+    function mute() {
+        player.mute()
+    }
+
+    function unMute() {
+        player.unMute()
+    }
+
+    function setVolume(volume) {
+        // Int Rang 0 ~ 100
+        player.setVolume(volume)
+    }
+
+    function getPlayQuality() {
+        // 재생 품질
+        return player.getPlaybackQuality()
+    }
+
+    function getAvailablePlayQualities() {
+        // 현재 사용할수 있는 재생 품질 Array<String>
+        return player.getAvailableQualityLevels()
+    }
+    /// [s] App Delegate Function
+
+</script>
+
+</html>

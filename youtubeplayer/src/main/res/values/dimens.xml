@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="txt_padding">14dp</dimen>
+    <dimen name="txt_font">14dp</dimen>
+    <dimen name="icon_height">36dp</dimen>
+    <dimen name="icon_side_padding">5dp</dimen>
+</resources>

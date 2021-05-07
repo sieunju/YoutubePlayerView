@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- [s] Youtube Player View Style -->
+    <declare-styleable name="YoutubePlayerView">
+        <attr name="youtube_is_auto_play" format="boolean"/> <!-- 자동 재생 유무 -->
+        <attr name="youtube_is_web_control" format="boolean"/> <!-- 웹뷰에서 제공하는 컨트롤러 의존 유무 -->
+        <attr name="youtube_end" format="float"/> <!-- 동영상 정지 시간 (초) -->
+        <attr name="youtube_start" format="float"/> <!-- 동영상 시작 시간 (초) -->
+        <attr name="youtube_is_logo" format="boolean"/> <!-- 로고 표시 유무 -->
+        <attr name="youtube_is_loop" format="boolean"/> <!-- 연속 재생 유무 -->
+        <attr name="youtube_is_effect" format="boolean"/> <!-- 동영상 특수효과 유무 -->
+        <attr name="youtube_is_relation" format="boolean"/> <!-- 관련 영상 표시 유무 -->
+        <attr name="youtube_load_policy" format="integer"/> <!-- 1로 설정시 사용자가 자막을 중지하더라도 표시 -->
+        <attr name="youtube_lang_pref" format="string"/> <!-- 자막 표시 언어 코드 -->
+        <attr name="youtube_is_fullscreen" format="boolean"/> <!-- 전체 화면 표시 유무 -->
+        <attr name="youtube_is_share" format="boolean"/> <!-- 공유하기 버튼 유무 -->
+    </declare-styleable>
+    <!-- [e] Youtube Player View Style -->
+
+</resources>
