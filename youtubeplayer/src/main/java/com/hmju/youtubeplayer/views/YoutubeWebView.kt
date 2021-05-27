@@ -13,6 +13,7 @@ import com.hmju.youtubeplayer.R
 import com.hmju.youtubeplayer.YoutubePlayerView
 import com.hmju.youtubeplayer.define.Constants
 import com.hmju.youtubeplayer.define.PlayQuality
+import com.hmju.youtubeplayer.model.Options
 import org.json.JSONArray
 
 /**
@@ -27,7 +28,7 @@ class YoutubeWebView @JvmOverloads constructor(
 ) : WebView(ctx, attrs, defStyleAttr) {
 
     private val uiThreadHandler = Handler(Looper.getMainLooper())
-    private var options: com.hmju.youtubeplayer.model.Options? = null
+    private var options: Options? = null
 
     init {
         if (!isInEditMode) {
@@ -45,7 +46,7 @@ class YoutubeWebView @JvmOverloads constructor(
         }
     }
 
-    internal fun initialize(options: com.hmju.youtubeplayer.model.Options) {
+    internal fun initialize(options: Options) {
         this.options = options
         val htmlPage = resources.openRawResource(R.raw.youtube)
             .bufferedReader()

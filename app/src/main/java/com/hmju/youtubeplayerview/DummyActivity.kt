@@ -16,8 +16,7 @@ class DummyActivity : AppCompatActivity() {
 
         Glide.with(this)
             .load(youtubeView.youtubeThumbNail)
-            .into(youtubeView.imgThumbnail)
-
+            .into(findViewById(R.id.youtubeThumb))
     }
 
     override fun onDestroy() {

@@ -18,6 +18,7 @@ import android.webkit.JavascriptInterface
 import android.widget.FrameLayout
 import android.widget.ProgressBar
 import android.widget.SeekBar
+import androidx.annotation.IdRes
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatSeekBar
 import androidx.appcompat.widget.AppCompatTextView
@@ -31,6 +32,7 @@ import com.hmju.youtubeplayer.define.State
 import com.hmju.youtubeplayer.listener.YoutubeListener
 import com.hmju.youtubeplayer.model.Options
 import com.hmju.youtubeplayer.utility.ConnectionLiveData
+import com.hmju.youtubeplayer.views.YoutubeThumbnailWebView
 import com.hmju.youtubeplayer.views.YoutubeWebView
 import com.hmju.youtubeplayerview.extension.convertToTime
 import com.hmju.youtubeplayerview.extension.multiNullCheck
@@ -75,7 +77,8 @@ class YoutubePlayerView @JvmOverloads constructor(
     }
     var listener: SimpleYoutubeListener? = null // Youtube Listener
     var youtubeId: String? = null
-    var youtubeThumbNail: String? = null
+
+    //    var youtubeThumbNail: String? = null
     val options: Options by lazy { Options() } // Youtube Options
 
     private val lifecycleRegistry: LifecycleRegistry by lazy { LifecycleRegistry(this) }
@@ -83,11 +86,16 @@ class YoutubePlayerView @JvmOverloads constructor(
     private val youtubeState: MutableLiveData<State> by lazy { MutableLiveData<State>() } // Youtube 상태값
     private val controllerLiveData: MutableLiveData<Boolean> by lazy { MutableLiveData<Boolean>() }
     private val fullScreenLiveData: MutableLiveData<Boolean> by lazy { MutableLiveData<Boolean>() } // 전체 화면
+    private val _youtubeThumbNail: MutableLiveData<String> by lazy { MutableLiveData<String>() }
+    val youtubeThumbNail: LiveData<String> get() = _youtubeThumbNail
     private val messageHandler: MessageHandler by lazy { MessageHandler(activity) }
 
     private var isLogoVisible: Boolean = false
     private var isFullScreenVisible: Boolean = false
     private var isShareVisible: Boolean = false
+
+    @IdRes
+    private var thumbnailId: Int = -1
 
     // [s] View Variable
     private lateinit var container: View
@@ -96,10 +104,7 @@ class YoutubePlayerView @JvmOverloads constructor(
     private val progressBar: ProgressBar by lazy { findViewById(R.id.progressBar) }
     private val youtubeController: ConstraintLayout by lazy { findViewById(R.id.youtubeController) }
     private val seekBar: AppCompatSeekBar by lazy { findViewById(R.id.seekBar) }
-    private val clThumbnail: ConstraintLayout by lazy { findViewById(R.id.clThumbNail) } // 썸네일 레이아웃
-
-    // TODO 확장성을 위해 썸네일 이미지는 사용자에 따라서 변경 가능하도록 처리.
-    val imgThumbnail: AppCompatImageView by lazy { findViewById(R.id.imgThumb) } // 썸네일 이미지
+    private var vThumbnail: View? = null
     private val tvProgress: AppCompatTextView by lazy { findViewById(R.id.tvProgressTime) } // 진행중인 시간
     private val tvRemain: AppCompatTextView by lazy { findViewById(R.id.tvRemainTime) } // 남은 시간
     private val imgLogo: AppCompatImageView by lazy { findViewById(R.id.imgLogo) }
@@ -152,6 +157,11 @@ class YoutubePlayerView @JvmOverloads constructor(
                         attr.getBoolean(R.styleable.YoutubePlayerView_youtube_is_fullscreen, true)
                     isShareVisible =
                         attr.getBoolean(R.styleable.YoutubePlayerView_youtube_is_share, true)
+
+                    thumbnailId = attr.getResourceId(
+                        R.styleable.YoutubePlayerView_youtube_thumbnail_id,
+                        NO_ID
+                    )
                 } finally {
                     attr.recycle()
                 }
@@ -198,7 +208,6 @@ class YoutubePlayerView @JvmOverloads constructor(
                     }
                 }
             }
-            R.id.clThumbNail -> startVideo()
             R.id.imgLogo -> moveYoutubePage()
             R.id.imgFullScreen -> fullScreenLiveData.postValue(fullScreenLiveData.value != true)
             R.id.imgShare -> moveShared()
@@ -228,11 +237,19 @@ class YoutubePlayerView @JvmOverloads constructor(
         imgFullScreen.visibility = if (isFullScreenVisible) VISIBLE else GONE
         imgShare.visibility = if (isShareVisible) VISIBLE else GONE
 
+        // 썸네일 레이아웃 없는 경우
+        if (thumbnailId == NO_ID) {
+            vThumbnail = YoutubeThumbnailWebView(context)
+            addView(vThumbnail, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))
+        } else {
+            vThumbnail = findViewById(thumbnailId)
+        }
+        vThumbnail?.setOnClickListener { startVideo() }
+
         imgLogo.setOnClickListener(this)
         imgFullScreen.setOnClickListener(this)
         imgPlayAndPause.setOnClickListener(this)
         imgShare.setOnClickListener(this)
-        clThumbnail.setOnClickListener(this)
         seekBar.setOnSeekBarChangeListener(this)
         if (options.isControl) {
             findViewById<View>(R.id.background).visibility = GONE
@@ -241,18 +258,20 @@ class YoutubePlayerView @JvmOverloads constructor(
         }
     }
 
+    private fun LogD(msg: String) {
+        if (DEBUG) {
+            Log.d(TAG, msg)
+        }
+    }
+
     @OnLifecycleEvent(Lifecycle.Event.ON_ANY)
     private fun onStateEvent(owner: LifecycleOwner, event: Lifecycle.Event) {
         lifecycleRegistry.handleLifecycleEvent(event)
-        if (DEBUG) {
-            Log.d(TAG, "Lifecycle Event $event")
-        }
+        LogD("Lifecycle Event $event")
         when (event) {
             Lifecycle.Event.ON_CREATE -> {
                 registerLiveData()
                 initView()
-            }
-            Lifecycle.Event.ON_RESUME -> {
             }
             Lifecycle.Event.ON_PAUSE -> {
                 pauseVideo()
@@ -284,18 +303,25 @@ class YoutubePlayerView @JvmOverloads constructor(
 
         // 재생 버튼
         youtubeState.observe(this, {
-            if (DEBUG) {
-                Log.d(TAG, "youtubeState $it")
-            }
+            LogD("youtubeState $it")
+
             // 재생중일떄는 -> 일시 정지 화면 노출
             when (it) {
                 State.CUE -> {
                     // 영상 대기
                     progressBar.visibility = VISIBLE
-                    clThumbnail.visibility = GONE
+                    if (thumbnailId == NO_ID) {
+                        vThumbnail?.visibility = GONE
+                    } else {
+                        vThumbnail?.visibility = GONE
+                    }
                 }
                 State.END -> {
-                    clThumbnail.visibility = VISIBLE
+                    if (thumbnailId == NO_ID) {
+                        vThumbnail?.visibility = VISIBLE
+                    } else {
+                        vThumbnail?.visibility = VISIBLE
+                    }
                 }
                 State.PLAYING -> {
                     // 영상 재생
@@ -314,7 +340,11 @@ class YoutubePlayerView @JvmOverloads constructor(
                 }
                 State.UNKNOWN -> {
                     progressBar.visibility = GONE
-                    clThumbnail.visibility = VISIBLE
+                    if (thumbnailId == NO_ID) {
+                        vThumbnail?.visibility = VISIBLE
+                    } else {
+                        vThumbnail?.visibility = VISIBLE
+                    }
                 }
                 else -> {
                 }
@@ -335,6 +365,16 @@ class YoutubePlayerView @JvmOverloads constructor(
             } else {
                 exitFullScreen()
                 imgFullScreen.setImageResource(R.drawable.ic_fullscreen_enter)
+            }
+        })
+
+        youtubeThumbNail.observe(this, { url ->
+            if (thumbnailId == -1) {
+                runCatching {
+                    (vThumbnail as YoutubeThumbnailWebView).setThumbNail(url)
+                }.onFailure {
+                    LogD("Error $it")
+                }
             }
         })
     }
@@ -525,7 +565,10 @@ class YoutubePlayerView @JvmOverloads constructor(
         // 중간품질 썸네일(320x180) : mqdefault.jpg
         // 고품질 썸네일(480x360) : hqdefault.jpg
         // 표준해상도 썸네일(640x480) : sddefault.jpg
-        youtubeThumbNail = "https://img.youtube.com/vi/$youtubeId/mqdefault.jpg"
+        _youtubeThumbNail.value = "https://img.youtube.com/vi/$youtubeId/mqdefault.jpg"
+//        youtubeThumbNail = "https://img.youtube.com/vi/$youtubeId/mqdefault.jpg"
+
+
     }
 
     // [e] Public Function
@@ -674,7 +717,7 @@ class YoutubePlayerView @JvmOverloads constructor(
         val superState = super.onSaveInstanceState()
         val state = SavedState(superState)
         state.youtubeId = youtubeId
-        state.youtubeThumb = youtubeThumbNail
+        state.youtubeThumb = youtubeThumbNail.value
         state.options = options
         state.isFullScreenVisible = isFullScreenVisible
         state.isLogoVisible = isLogoVisible
@@ -686,7 +729,7 @@ class YoutubePlayerView @JvmOverloads constructor(
         val ss = state as SavedState
         super.onRestoreInstanceState(ss.superState)
         youtubeId = ss.youtubeId
-        youtubeThumbNail = ss.youtubeThumb
+        _youtubeThumbNail.value = ss.youtubeThumb
         options.copy(ss.options)
         isFullScreenVisible = ss.isFullScreenVisible
         isLogoVisible = ss.isLogoVisible
@@ -726,6 +769,7 @@ class YoutubePlayerView @JvmOverloads constructor(
             }
         }
 
+        @JvmField
         val CREATOR = object : Parcelable.Creator<SavedState> {
             override fun createFromParcel(source: Parcel) = SavedState(source)
 
