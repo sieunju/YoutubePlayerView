@@ -2,6 +2,7 @@
 <resources>
     <!-- [s] Youtube Player View Style -->
     <declare-styleable name="YoutubePlayerView">
+        <attr name="youtube_thumbnail_id" format="reference"/> <!-- 썸네일 아이디값 -->
         <attr name="youtube_is_auto_play" format="boolean"/> <!-- 자동 재생 유무 -->
         <attr name="youtube_is_web_control" format="boolean"/> <!-- 웹뷰에서 제공하는 컨트롤러 의존 유무 -->
         <attr name="youtube_end" format="float"/> <!-- 동영상 정지 시간 (초) -->
