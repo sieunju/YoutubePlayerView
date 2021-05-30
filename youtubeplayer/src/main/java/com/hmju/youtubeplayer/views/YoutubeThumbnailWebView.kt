@@ -16,7 +16,7 @@ import com.hmju.youtubeplayer.YoutubePlayerView
  *
  * Created by hmju on 2021-05-26
  */
-class YoutubeThumbnailWebView @JvmOverloads constructor(
+internal class YoutubeThumbnailWebView @JvmOverloads constructor(
     ctx: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
