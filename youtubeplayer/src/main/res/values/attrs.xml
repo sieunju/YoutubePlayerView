@@ -15,11 +15,6 @@
         <attr name="youtube_lang_pref" format="string"/> <!-- 자막 표시 언어 코드 -->
         <attr name="youtube_is_fullscreen" format="boolean"/> <!-- 전체 화면 표시 유무 -->
         <attr name="youtube_is_share" format="boolean"/> <!-- 공유하기 버튼 유무 -->
-        <attr name="youtube_thumb_type" format="enum">
-            <enum name="auto" value="0"/> <!-- 내장되어 있는 썸네일뷰로 표현 -->
-            <enum name="hard" value="1"/> <!-- 사용자가 정의 한 뷰로 표현 -->
-        </attr> <!-- 썸네일 처리 자동, 수동 -->
-        <attr name="youtube_thumb_hard_id" format="reference|integer"/> <!-- 썸네일 수동으로 하는 경우 해당 뷰 아이디 값 -->
     </declare-styleable>
     <!-- [e] Youtube Player View Style -->
 
