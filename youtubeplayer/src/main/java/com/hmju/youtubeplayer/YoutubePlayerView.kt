@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.res.TypedArray
+import android.graphics.Canvas
 import android.net.Uri
 import android.os.*
 import android.util.AttributeSet
@@ -19,6 +20,7 @@ import android.widget.FrameLayout
 import android.widget.ProgressBar
 import android.widget.SeekBar
 import androidx.annotation.IdRes
+import androidx.annotation.LayoutRes
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatSeekBar
 import androidx.appcompat.widget.AppCompatTextView
@@ -77,8 +79,6 @@ class YoutubePlayerView @JvmOverloads constructor(
     }
     var listener: SimpleYoutubeListener? = null // Youtube Listener
     var youtubeId: String? = null
-
-    //    var youtubeThumbNail: String? = null
     val options: Options by lazy { Options() } // Youtube Options
 
     private val lifecycleRegistry: LifecycleRegistry by lazy { LifecycleRegistry(this) }
@@ -98,7 +98,7 @@ class YoutubePlayerView @JvmOverloads constructor(
     private var thumbnailId: Int = -1
 
     // [s] View Variable
-    private lateinit var container: View
+    private lateinit var container: ConstraintLayout
     private val imgPlayAndPause: AppCompatImageView by lazy { findViewById(R.id.imgPlayAndPause) }
     private val youtubeFrame: FrameLayout by lazy { findViewById(R.id.youtubeFrame) }
     private val progressBar: ProgressBar by lazy { findViewById(R.id.progressBar) }
@@ -119,6 +119,7 @@ class YoutubePlayerView @JvmOverloads constructor(
             attrs?.run {
                 val attr: TypedArray =
                     ctx.obtainStyledAttributes(this, R.styleable.YoutubePlayerView)
+
                 try {
                     options.apply {
                         isAutoPlay = attr.getBoolean(
@@ -170,7 +171,7 @@ class YoutubePlayerView @JvmOverloads constructor(
             // AddView
             LayoutInflater.from(context).inflate(R.layout.view_youtube_player, this, false).apply {
                 attachViewToParent(this, 0, layoutParams)
-                container = this
+                container = this as ConstraintLayout
             }
 
             activity.lifecycle.addObserver(this)
@@ -187,6 +188,17 @@ class YoutubePlayerView @JvmOverloads constructor(
             val ratioSize = MeasureSpec.getSize(widthMeasureSpec).toFloat() * (9F / 16F)
             val height = MeasureSpec.makeMeasureSpec(ratioSize.toInt(), MeasureSpec.EXACTLY)
             super.onMeasure(widthMeasureSpec, height)
+        }
+    }
+
+    override fun addView(child: View?, index: Int, params: ViewGroup.LayoutParams?) {
+        container.addView(child, index, params)
+        if (thumbnailId != NO_ID  &&
+            vThumbnail == null &&
+            child != null &&
+            child.id == thumbnailId) {
+            child.setOnClickListener { startVideo() }
+            vThumbnail = child
         }
     }
 
@@ -218,7 +230,10 @@ class YoutubePlayerView @JvmOverloads constructor(
         tvProgress.text = progress.toFloat().convertToTime()
     }
 
-    override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+    override fun onStartTrackingTouch(seekBar: SeekBar?) {
+        messageHandler.removeMessages(WHAT_CONTROL_HIDE)
+        messageHandler.removeMessages(WHAT_TIMER)
+    }
 
     override fun onStopTrackingTouch(seekBar: SeekBar?) {
         youtubeWebView?.seekTo(seekBar?.progress?.toFloat())
@@ -241,10 +256,8 @@ class YoutubePlayerView @JvmOverloads constructor(
         if (thumbnailId == NO_ID) {
             vThumbnail = YoutubeThumbnailWebView(context)
             addView(vThumbnail, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))
-        } else {
-            vThumbnail = findViewById(thumbnailId)
+            vThumbnail?.setOnClickListener { startVideo() }
         }
-        vThumbnail?.setOnClickListener { startVideo() }
 
         imgLogo.setOnClickListener(this)
         imgFullScreen.setOnClickListener(this)
@@ -258,6 +271,7 @@ class YoutubePlayerView @JvmOverloads constructor(
         }
     }
 
+    // TODO 라이브 버전에서 삭제 예정
     private fun LogD(msg: String) {
         if (DEBUG) {
             Log.d(TAG, msg)
@@ -267,7 +281,6 @@ class YoutubePlayerView @JvmOverloads constructor(
     @OnLifecycleEvent(Lifecycle.Event.ON_ANY)
     private fun onStateEvent(owner: LifecycleOwner, event: Lifecycle.Event) {
         lifecycleRegistry.handleLifecycleEvent(event)
-        LogD("Lifecycle Event $event")
         when (event) {
             Lifecycle.Event.ON_CREATE -> {
                 registerLiveData()
@@ -310,18 +323,10 @@ class YoutubePlayerView @JvmOverloads constructor(
                 State.CUE -> {
                     // 영상 대기
                     progressBar.visibility = VISIBLE
-                    if (thumbnailId == NO_ID) {
-                        vThumbnail?.visibility = GONE
-                    } else {
-                        vThumbnail?.visibility = GONE
-                    }
+                    vThumbnail?.visibility = GONE
                 }
                 State.END -> {
-                    if (thumbnailId == NO_ID) {
-                        vThumbnail?.visibility = VISIBLE
-                    } else {
-                        vThumbnail?.visibility = VISIBLE
-                    }
+                    vThumbnail?.visibility = VISIBLE
                 }
                 State.PLAYING -> {
                     // 영상 재생
@@ -340,11 +345,7 @@ class YoutubePlayerView @JvmOverloads constructor(
                 }
                 State.UNKNOWN -> {
                     progressBar.visibility = GONE
-                    if (thumbnailId == NO_ID) {
-                        vThumbnail?.visibility = VISIBLE
-                    } else {
-                        vThumbnail?.visibility = VISIBLE
-                    }
+                    vThumbnail?.visibility = VISIBLE
                 }
                 else -> {
                 }
@@ -382,7 +383,7 @@ class YoutubePlayerView @JvmOverloads constructor(
     /**
      * 동영상 재생
      */
-    private fun startVideo() {
+    fun startVideo() {
         // Network Check
         if (connectionLiveData.value == false) return
 
@@ -566,9 +567,6 @@ class YoutubePlayerView @JvmOverloads constructor(
         // 고품질 썸네일(480x360) : hqdefault.jpg
         // 표준해상도 썸네일(640x480) : sddefault.jpg
         _youtubeThumbNail.value = "https://img.youtube.com/vi/$youtubeId/mqdefault.jpg"
-//        youtubeThumbNail = "https://img.youtube.com/vi/$youtubeId/mqdefault.jpg"
-
-
     }
 
     // [e] Public Function
@@ -784,11 +782,8 @@ class YoutubePlayerView @JvmOverloads constructor(
 
         override fun handleMessage(msg: Message) {
             super.handleMessage(msg)
-            if (DEBUG) {
-                Log.d(TAG, "handleMessage Act ${act.get()}\t${msg.what}")
-            }
             if (act.get() == null) return
-
+            LogD("Message Handler ${msg.what}")
             when (msg.what) {
                 WHAT_TIMER -> {
                     fetchCurrentTime { currTime ->

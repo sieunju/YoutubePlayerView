@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.os.Handler
 import android.os.Looper
 import android.util.AttributeSet
+import android.view.View
 import android.webkit.WebSettings
 import android.webkit.WebView
 import androidx.annotation.IntRange
@@ -32,6 +33,7 @@ class YoutubeWebView @JvmOverloads constructor(
 
     init {
         if (!isInEditMode) {
+            setLayerType(View.LAYER_TYPE_HARDWARE, null)
             settings.apply {
                 @SuppressLint("SetJavaScriptEnabled")
                 javaScriptEnabled = true

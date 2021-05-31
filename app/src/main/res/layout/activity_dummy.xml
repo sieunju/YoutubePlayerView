@@ -6,20 +6,28 @@
     android:layout_height="match_parent"
     tools:context=".DummyActivity">
 
-    <com.hmju.youtubeplayer.YoutubePlayerView
-        android:id="@+id/youtubeView"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvContents"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        android:orientation="vertical"
+        android:layout_height="wrap_content"/>
 
-        <ImageView
-            android:id="@+id/youtubeThumb"
-            android:visibility="gone"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:adjustViewBounds="true" />
+<!--    <com.hmju.youtubeplayer.YoutubePlayerView-->
+<!--        android:id="@+id/youtubeView"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent">-->
 
-    </com.hmju.youtubeplayer.YoutubePlayerView>
+<!--        <ImageView-->
+<!--            android:id="@+id/youtubeThumb"-->
+<!--            android:visibility="gone"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:adjustViewBounds="true" />-->
+
+<!--    </com.hmju.youtubeplayer.YoutubePlayerView>-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

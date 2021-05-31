@@ -16,7 +16,6 @@ class Logger {
         fun d(msg: String) {
             val ste = Thread.currentThread().stackTrace[4]
             val sb = StringBuilder()
-            sb.append(ste.methodName)
             Log.d("[$TAG:$sb]", msg)
         }
     }
