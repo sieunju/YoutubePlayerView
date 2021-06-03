@@ -16,11 +16,11 @@ import kotlin.random.Random
 class DummyActivity : AppCompatActivity() {
 
     private val youtubeArr = arrayListOf<String>(
-            "https://www.youtube.com/watch?v=khmnEuo-oOg",
-            "https://www.youtube.com/watch?v=GV2asy4FpIA",
-            "https://www.youtube.com/watch?v=1T2pwVGUhu4",
-            "https://www.youtube.com/watch?v=W0A0BTCl6U0",
-            "https://www.youtube.com/watch?v=bRBeNiO4qTM"
+        "https://www.youtube.com/watch?v=khmnEuo-oOg",
+        "https://www.youtube.com/watch?v=GV2asy4FpIA",
+        "https://www.youtube.com/watch?v=1T2pwVGUhu4",
+        "https://www.youtube.com/watch?v=W0A0BTCl6U0",
+        "https://www.youtube.com/watch?v=bRBeNiO4qTM"
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,19 +34,9 @@ class DummyActivity : AppCompatActivity() {
             }
             return@fromCallable tmpList
         }.subscribeOn(Schedulers.io())
-                .subscribe({
-                    findViewById<RecyclerView>(R.id.rvContents).adapter = Adapter(it)
-                }, {
-
-                })
-//        val youtubeView = findViewById<YoutubePlayerView>(R.id.youtubeView)
-////        youtubeView.setYoutubeUrl("https://www.youtube.com/watch?v=khmnEuo-oOg")
-////        youtubeView.setYoutubeUrl("https://www.youtube.com/watch?v=GV2asy4FpIA")
-//        youtubeView.setYoutubeUrl("https://www.youtube.com/watch?v=1T2pwVGUhu4")
-//
-//        Glide.with(this)
-//                .load(youtubeView.youtubeThumbNail)
-//                .into(findViewById(R.id.youtubeThumb))
+            .subscribe({
+                findViewById<RecyclerView>(R.id.rvContents).adapter = Adapter(it)
+            }, {})
     }
 
     override fun onDestroy() {
@@ -54,23 +44,25 @@ class DummyActivity : AppCompatActivity() {
         Logger.d("onDestroy")
     }
 
-    inner class Adapter(private val dataList: ArrayList<String>) : RecyclerView.Adapter<ViewHolder>() {
+    inner class Adapter(private val dataList: ArrayList<String>) :
+        RecyclerView.Adapter<ViewHolder>() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(parent)
 
         override fun onBindViewHolder(holder: ViewHolder, pos: Int) {
             holder.youtubeView.setYoutubeUrl(dataList[pos])
             Glide.with(holder.youtubeThumb)
-                    .load(holder.youtubeView.youtubeThumbNail.value)
-                    .into(holder.youtubeThumb)
+                .load(holder.youtubeView.thumbNail)
+                .into(holder.youtubeThumb)
         }
 
         override fun getItemCount() = dataList.size
     }
 
-    inner class ViewHolder(parent: ViewGroup)
-        : RecyclerView.ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_view_holder, parent, false)) {
+    inner class ViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
+        LayoutInflater.from(parent.context).inflate(R.layout.item_view_holder, parent, false)
+    ) {
         val youtubeView: YoutubePlayerView by lazy { itemView.findViewById(R.id.youtubeView) }
-        val youtubeThumb : AppCompatImageView by lazy { itemView.findViewById(R.id.imgThumb) }
+        val youtubeThumb: AppCompatImageView by lazy { itemView.findViewById(R.id.imgThumb) }
 
         init {
 //            youtubeThumb.setOnClickListener {

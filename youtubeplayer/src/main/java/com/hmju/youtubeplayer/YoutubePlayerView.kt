@@ -45,21 +45,21 @@ import java.util.*
  * Created by hmju on 2021-04-27
  */
 class YoutubePlayerView @JvmOverloads constructor(
-        ctx: Context,
-        attrs: AttributeSet? = null,
-        defStyleAttr: Int = 0
+    ctx: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
 ) : ConstraintLayout(ctx, attrs, defStyleAttr), LifecycleOwner, LifecycleObserver,
-        View.OnClickListener, SeekBar.OnSeekBarChangeListener {
+    View.OnClickListener, SeekBar.OnSeekBarChangeListener {
 
     companion object {
         const val TAG = "YoutubeLib"
-        const val DEBUG = true
+        const val DEBUG = false
         const val WHAT_TIMER = 1                // 현재 진행중인 시간
         const val WHAT_CONTROL_HIDE = 2         // 컨트롤러 뷰 숨기기
         const val WHAT_CONTROL_SHOW = 3         // 컨트롤러 뷰 보이게
 
         fun LogD(msg: String) {
-            if (BuildConfig.DEBUG) {
+            if (DEBUG) {
                 Log.d(TAG, msg)
             }
         }
@@ -90,8 +90,13 @@ class YoutubePlayerView @JvmOverloads constructor(
     private val youtubeState: MutableLiveData<State> by lazy { MutableLiveData<State>() } // Youtube 상태값
     private val controllerLiveData: MutableLiveData<Boolean> by lazy { MutableLiveData<Boolean>() }
     private val fullScreenLiveData: MutableLiveData<Boolean> by lazy { MutableLiveData<Boolean>() } // 전체 화면
-    private val _youtubeThumbNail: MutableLiveData<String> by lazy { MutableLiveData<String>() }
-    val youtubeThumbNail: LiveData<String> get() = _youtubeThumbNail
+    private val youtubeThumbNail: MutableLiveData<String> by lazy { MutableLiveData<String>() }
+
+    //    val youtubeThumbNail: LiveData<String> get() = _youtubeThumbNail
+    var thumbNail: String = ""
+        get() = youtubeThumbNail.value ?: ""
+        private set
+
     private val messageHandler: MessageHandler by lazy { MessageHandler(activity) }
 
     private var isLogoVisible: Boolean = false
@@ -122,30 +127,30 @@ class YoutubePlayerView @JvmOverloads constructor(
             // 속성값 세팅
             attrs?.run {
                 val attr: TypedArray =
-                        ctx.obtainStyledAttributes(this, R.styleable.YoutubePlayerView)
+                    ctx.obtainStyledAttributes(this, R.styleable.YoutubePlayerView)
 
                 try {
                     options.apply {
                         isAutoPlay = attr.getBoolean(
-                                R.styleable.YoutubePlayerView_youtube_is_auto_play,
-                                false
+                            R.styleable.YoutubePlayerView_youtube_is_auto_play,
+                            false
                         )
                         isControl = attr.getBoolean(
-                                R.styleable.YoutubePlayerView_youtube_is_web_control,
-                                false
+                            R.styleable.YoutubePlayerView_youtube_is_web_control,
+                            false
                         )
                         isLoop =
-                                attr.getBoolean(R.styleable.YoutubePlayerView_youtube_is_loop, false)
+                            attr.getBoolean(R.styleable.YoutubePlayerView_youtube_is_loop, false)
                         isEffect =
-                                attr.getBoolean(R.styleable.YoutubePlayerView_youtube_is_effect, true)
+                            attr.getBoolean(R.styleable.YoutubePlayerView_youtube_is_effect, true)
                         isRel = attr.getBoolean(
-                                R.styleable.YoutubePlayerView_youtube_is_relation,
-                                false
+                            R.styleable.YoutubePlayerView_youtube_is_relation,
+                            false
                         )
                         loadPolicy =
-                                attr.getInt(R.styleable.YoutubePlayerView_youtube_load_policy, 0)
+                            attr.getInt(R.styleable.YoutubePlayerView_youtube_load_policy, 0)
                         val langPref =
-                                attr.getString(R.styleable.YoutubePlayerView_youtube_lang_pref)
+                            attr.getString(R.styleable.YoutubePlayerView_youtube_lang_pref)
                         if (!langPref.isNullOrEmpty()) {
                             lanPref = langPref
                         }
@@ -157,15 +162,15 @@ class YoutubePlayerView @JvmOverloads constructor(
                     }
 
                     isLogoVisible =
-                            attr.getBoolean(R.styleable.YoutubePlayerView_youtube_is_logo, true)
+                        attr.getBoolean(R.styleable.YoutubePlayerView_youtube_is_logo, true)
                     isFullScreenVisible =
-                            attr.getBoolean(R.styleable.YoutubePlayerView_youtube_is_fullscreen, true)
+                        attr.getBoolean(R.styleable.YoutubePlayerView_youtube_is_fullscreen, true)
                     isShareVisible =
-                            attr.getBoolean(R.styleable.YoutubePlayerView_youtube_is_share, true)
+                        attr.getBoolean(R.styleable.YoutubePlayerView_youtube_is_share, true)
 
                     thumbnailId = attr.getResourceId(
-                            R.styleable.YoutubePlayerView_youtube_thumbnail_id,
-                            NO_ID
+                        R.styleable.YoutubePlayerView_youtube_thumbnail_id,
+                        NO_ID
                     )
                 } finally {
                     attr.recycle()
@@ -198,9 +203,10 @@ class YoutubePlayerView @JvmOverloads constructor(
     override fun addView(child: View?, index: Int, params: ViewGroup.LayoutParams?) {
         container.addView(child, index, params)
         if (thumbnailId != NO_ID &&
-                vThumbnail == null &&
-                child != null &&
-                child.id == thumbnailId) {
+            vThumbnail == null &&
+            child != null &&
+            child.id == thumbnailId
+        ) {
             child.setOnClickListener { startVideo() }
             vThumbnail = child
         }
@@ -400,8 +406,8 @@ class YoutubePlayerView @JvmOverloads constructor(
         }
 
         youtubeFrame.addView(
-                youtubeWebView,
-                LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+            youtubeWebView,
+            LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
         )
         youtubeState.postValue(State.CUE)
     }
@@ -410,14 +416,14 @@ class YoutubePlayerView @JvmOverloads constructor(
      * 유튜브 재생 상태 가공 함수
      */
     private fun parseState(state: Int) =
-            when (state) {
-                State.CUE.code -> State.CUE
-                State.END.code -> State.END
-                State.PLAYING.code -> State.PLAYING
-                State.PAUSE.code -> State.PAUSE
-                State.BUFFERING.code -> State.BUFFERING
-                else -> State.UNKNOWN
-            }
+        when (state) {
+            State.CUE.code -> State.CUE
+            State.END.code -> State.END
+            State.PLAYING.code -> State.PLAYING
+            State.PAUSE.code -> State.PAUSE
+            State.BUFFERING.code -> State.BUFFERING
+            else -> State.UNKNOWN
+        }
 
     /**
      * 종료 시간 처리
@@ -493,12 +499,12 @@ class YoutubePlayerView @JvmOverloads constructor(
         } else {
             @Suppress("DEPRECATION")
             decorView.systemUiVisibility =
-                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
-                            View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
-                            View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
-                            View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
-                            View.SYSTEM_UI_FLAG_FULLSCREEN or
-                            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
+                        View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
+                        View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
+                        View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
+                        View.SYSTEM_UI_FLAG_FULLSCREEN or
+                        View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
         }
     }
 
@@ -563,7 +569,7 @@ class YoutubePlayerView @JvmOverloads constructor(
         // 중간품질 썸네일(320x180) : mqdefault.jpg
         // 고품질 썸네일(480x360) : hqdefault.jpg
         // 표준해상도 썸네일(640x480) : sddefault.jpg
-        _youtubeThumbNail.value = "https://img.youtube.com/vi/$youtubeId/mqdefault.jpg"
+        youtubeThumbNail.value = "https://img.youtube.com/vi/$youtubeId/mqdefault.jpg"
     }
 
     // [e] Public Function
@@ -724,7 +730,7 @@ class YoutubePlayerView @JvmOverloads constructor(
         val ss = state as SavedState
         super.onRestoreInstanceState(ss.superState)
         youtubeId = ss.youtubeId
-        _youtubeThumbNail.value = ss.youtubeThumb
+        youtubeThumbNail.value = ss.youtubeThumb
         options.copy(ss.options)
         isFullScreenVisible = ss.isFullScreenVisible
         isLogoVisible = ss.isLogoVisible
