@@ -18,7 +18,6 @@ class DummyActivity : AppCompatActivity() {
     private val youtubeArr = arrayListOf<String>(
         "https://www.youtube.com/watch?v=khmnEuo-oOg",
         "https://www.youtube.com/watch?v=GV2asy4FpIA",
-        "https://www.youtube.com/watch?v=1T2pwVGUhu4",
         "https://www.youtube.com/watch?v=W0A0BTCl6U0",
         "https://www.youtube.com/watch?v=bRBeNiO4qTM"
     )
