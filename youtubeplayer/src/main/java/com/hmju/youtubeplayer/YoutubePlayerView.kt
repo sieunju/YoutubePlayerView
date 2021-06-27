@@ -37,7 +37,6 @@ import com.hmju.youtubeplayer.model.Options
 import com.hmju.youtubeplayer.utility.ConnectionLiveData
 import com.hmju.youtubeplayer.views.YoutubeThumbnailView
 import com.hmju.youtubeplayer.views.YoutubeWebView
-import com.hmju.youtubeplayerview.extension.*
 import java.lang.ref.WeakReference
 import java.util.*
 

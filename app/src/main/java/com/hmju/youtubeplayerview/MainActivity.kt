@@ -6,33 +6,30 @@ import android.os.Bundle
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.hmju.youtubeplayer.YoutubePlayerView
+import com.hmju.youtubeplayer.define.State
 import com.hmju.youtubeplayerview.util.Logger
 
 class MainActivity : AppCompatActivity() {
+	private val youtubePlayerView : YoutubePlayerView by lazy { findViewById(R.id.youtubeView) }
+
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		setContentView(R.layout.activity_main)
-		Logger.d("Activity onCreate")
 
-//		val youtubeView = findViewById<YoutubePlayerView>(R.id.youtubeView)
-//		youtubeView.setYoutubeUrl("https://www.youtube.com/watch?v=khmnEuo-oOg")
-////        youtubeView.setYoutubeUrl("https://www.youtube.com/watch?v=hlWiI4xVXKY")
-//		youtubeView.listener = object : YoutubePlayerView.Companion.SimpleYoutubeListener() {
-//
-//
-//			override fun onEnterFullScreen() {
-//				findViewById<TextView>(R.id.tvTT).visibility = View.GONE
-//			}
-//
-//			override fun onExitFullScreen() {
-//				findViewById<TextView>(R.id.tvTT).visibility = View.VISIBLE
-//
-//			}
-//		}
+		youtubePlayerView.setYoutubeUrl("https://www.youtube.com/watch?v=k3rUzmGK1Hs")
+		youtubePlayerView.listener = object : YoutubePlayerView.Companion.SimpleYoutubeListener() {
+			override fun onState(state: State) {
+				Logger.d("onState $state")
+			}
 
-	}
+			override fun onEnterFullScreen() {
+				Logger.d("onEnterFullScreen")
+			}
 
-	fun moveDummy(v : View){
-		startActivity(Intent(this,DummyActivity::class.java))
+			override fun onExitFullScreen() {
+				Logger.d("onExitFullScreen")
+			}
+		}
 	}
 }

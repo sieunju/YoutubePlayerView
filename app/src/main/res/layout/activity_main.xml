@@ -6,22 +6,11 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-<!--    <com.hmju.youtubeplayer.YoutubePlayerView-->
-<!--        android:id="@+id/youtubeView"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:visibility="gone"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintTop_toTopOf="parent" />-->
-
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/tvTT"
+    <com.hmju.youtubeplayer.YoutubePlayerView
+        android:id="@+id/youtubeView"
         android:layout_width="match_parent"
-        android:textSize="25dp"
-        android:text="유튜브 라이브러리~~~~~~~"
-        android:textColor="#BA1B1B"
-        android:onClick="moveDummy"
+        android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_height="wrap_content"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
