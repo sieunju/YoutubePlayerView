@@ -2,19 +2,18 @@
 <resources>
     <!-- [s] Youtube Player View Style -->
     <declare-styleable name="YoutubePlayerView">
-        <attr name="youtube_thumbnail_id" format="reference"/> <!-- 썸네일 아이디값 -->
-        <attr name="youtube_is_auto_play" format="boolean"/> <!-- 자동 재생 유무 -->
-        <attr name="youtube_is_web_control" format="boolean"/> <!-- 웹뷰에서 제공하는 컨트롤러 의존 유무 -->
-        <attr name="youtube_end" format="float"/> <!-- 동영상 정지 시간 (초) -->
-        <attr name="youtube_start" format="float"/> <!-- 동영상 시작 시간 (초) -->
-        <attr name="youtube_is_logo" format="boolean"/> <!-- 로고 표시 유무 -->
-        <attr name="youtube_is_loop" format="boolean"/> <!-- 연속 재생 유무 -->
-        <attr name="youtube_is_effect" format="boolean"/> <!-- 동영상 특수효과 유무 -->
-        <attr name="youtube_is_relation" format="boolean"/> <!-- 관련 영상 표시 유무 -->
-        <attr name="youtube_load_policy" format="integer"/> <!-- 1로 설정시 사용자가 자막을 중지하더라도 표시 -->
-        <attr name="youtube_lang_pref" format="string"/> <!-- 자막 표시 언어 코드 -->
-        <attr name="youtube_is_fullscreen" format="boolean"/> <!-- 전체 화면 표시 유무 -->
-        <attr name="youtube_is_share" format="boolean"/> <!-- 공유하기 버튼 유무 -->
+        <attr name="youtubeThumbnailId" format="reference"/> <!-- 썸네일 아이디값 -->
+        <attr name="youtubeIsAutoPlay" format="boolean"/> <!-- 자동 재생 유무 -->
+        <attr name="youtubeIsWebControl" format="boolean"/> <!-- 웹뷰에서 제공하는 컨트롤러 의존 유무 -->
+        <attr name="youtubeIsLogo" format="boolean"/> <!-- 로고 표시 유무 -->
+        <attr name="youtubeIsLoop" format="boolean"/> <!-- 연속 재생 유무 -->
+        <attr name="youtubeIsEffect" format="boolean"/> <!-- 동영상 특수효과 유무 -->
+        <attr name="youtubeIsRelation" format="boolean"/> <!-- 관련 영상 표시 유무 -->
+        <attr name="youtubeLoadPolicy" format="integer"/> <!-- 1로 설정시 사용자가 자막을 중지하더라도 표시 -->
+        <attr name="youtubeLangPref" format="string"/> <!-- 자막 표시 언어 코드 -->
+        <attr name="youtubeIsFullscreen" format="boolean"/> <!-- 전체 화면 표시 유무 -->
+        <attr name="youtubeIsShare" format="boolean"/> <!-- 공유하기 버튼 유무 -->
+        <attr name="youtubeSkipThumbNail" format="boolean"/> <!-- 내/외부 썸네일 처리 스킵 유무 -->
     </declare-styleable>
     <!-- [e] Youtube Player View Style -->
 

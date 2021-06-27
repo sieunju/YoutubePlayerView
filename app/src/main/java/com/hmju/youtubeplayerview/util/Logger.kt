@@ -9,7 +9,7 @@ import android.util.Log
  */
 class Logger {
     companion object {
-        val TAG = "LogUtil"
+        val TAG = "YoutubeLib"
 
         @JvmStatic
         @JvmName("d")

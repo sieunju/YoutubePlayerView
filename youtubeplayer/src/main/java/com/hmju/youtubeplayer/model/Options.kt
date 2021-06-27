@@ -41,6 +41,7 @@ class Options : JSONObject(), Serializable {
             field = value
         }
 
+    @Deprecated("무조건 Native 에서 처리 하도록 함")
     var isControl: Boolean = false // 웹뷰 자체 컨트롤러 표시 유무
         set(value) {
             if (value) {
@@ -51,27 +52,20 @@ class Options : JSONObject(), Serializable {
             field = value
         }
 
+    @Deprecated("실제로 테스트 해본 결과 적용 안됩니다.")
     var end: Float = 0F // 종료 시점
         set(value) {
-            put(END, value)
+//            put(END, value)
             field = value
         }
 
+    @Deprecated("실제로 테스트 해본 결과 적용 안됩니다.")
     var start: Float = 0F // 시작 시점
         set(value) {
-            put(START, value)
+//            put(START, value)
             field = value
         }
 
-    //    var isLogo: Boolean = false // 로고 표시 유무
-//        set(value) {
-//            if (value) {
-//                put(LOGO, 0)
-//            } else {
-//                put(LOGO, 1)
-//            }
-//            field = value
-//        }
     var isLoop: Boolean = false // 연속 재생 유무
         set(value) {
             if (value) {

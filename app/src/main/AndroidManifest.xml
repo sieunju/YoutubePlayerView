@@ -15,7 +15,7 @@
         <activity
             android:name=".DummyActivity"
             android:configChanges="orientation|screenSize"
-            android:screenOrientation="unspecified" />
+            android:screenOrientation="portrait" />
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation|screenSize"

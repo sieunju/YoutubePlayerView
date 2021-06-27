@@ -5,12 +5,14 @@
     android:layout_height="match_parent"
     android:background="@android:color/black">
 
-    <WebView
-        android:id="@+id/webView"
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/imgThumb"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
     <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/imgPlay"
+        android:visibility="gone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_play"
@@ -20,8 +22,8 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <View
-        android:layout_width="match_parent"
         android:id="@+id/vPanel"
-        android:layout_height="match_parent"/>
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
