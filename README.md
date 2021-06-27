@@ -21,18 +21,32 @@
     - *App Module Gradle*
     ~~~
     dependencies {
-        implementation 'com.github.sieunju:YoutubePlayerView:0.0.1'
+        implementation 'com.github.sieunju:YoutubePlayerView:0.0.3'
     }
     ~~~
 
-4. #### 사용 예
-    - *xml*
+4. #### 기능
+    - 유튜브 재생, 일시중지, 중지 기능
+    - 공유하기 및 Youtube 앱으로 재생하기
+    - 전체 화면
+    - 현재 진행 상황 표시 및 원하는 시간으로 이동
+    
+5. #### 사용 예
+    - *xml(기본)*
+    ~~~
+    <com.hmju.youtubeplayer.YoutubePlayerView
+        android:id="@+id/youtubeView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+    ~~~
+    
+    - *xml(외부 이미지 라이브러리로 썸네일 표현하는 경우)*
     ~~~
     <com.hmju.youtubeplayer.YoutubePlayerView
         android:id="@+id/youtubeView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:youtube_thumbnail_id="@id/imgThumb">
+        app:youtubeThumbnailId="@id/imgThumb">
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/imgThumb"
@@ -42,21 +56,21 @@
             android:scaleType="centerCrop" />
     </com.hmju.youtubeplayer.YoutubePlayerView>
     ~~~
+    
     - *attrs*
     ~~~
-        <declare-styleable name="YoutubePlayerView">
-        <attr name="youtube_thumbnail_id" format="reference"/> <!-- 썸네일 아이디값 -->
-        <attr name="youtube_is_auto_play" format="boolean"/> <!-- 자동 재생 유무 -->
-        <attr name="youtube_is_web_control" format="boolean"/> <!-- 웹뷰에서 제공하는 컨트롤러 의존 유무 -->
-        <attr name="youtube_is_logo" format="boolean"/> <!-- 로고 표시 유무 -->
-        <attr name="youtube_is_loop" format="boolean"/> <!-- 연속 재생 유무 -->
-        <attr name="youtube_is_effect" format="boolean"/> <!-- 동영상 특수효과 유무 -->
-        <attr name="youtube_is_relation" format="boolean"/> <!-- 관련 영상 표시 유무 -->
-        <attr name="youtube_load_policy" format="integer"/> <!-- 1로 설정시 사용자가 자막을 중지하더라도 표시 -->
-        <attr name="youtube_lang_pref" format="string"/> <!-- 자막 표시 언어 코드 -->
-        <attr name="youtube_is_fullscreen" format="boolean"/> <!-- 전체 화면 표시 유무 -->
-        <attr name="youtube_is_share" format="boolean"/> <!-- 공유하기 버튼 유무 -->
+    <declare-styleable name="YoutubePlayerView">
+        <attr name="youtubeThumbnailId" format="reference"/> <!-- 썸네일 아이디값 -->
+        <attr name="youtubeIsAutoPlay" format="boolean"/> <!-- 자동 재생 유무 -->
+        <attr name="youtubeIsWebControl" format="boolean"/> <!-- 웹뷰에서 제공하는 컨트롤러 의존 유무 -->
+        <attr name="youtubeIsLogo" format="boolean"/> <!-- 로고 표시 유무 -->
+        <attr name="youtubeIsLoop" format="boolean"/> <!-- 연속 재생 유무 -->
+        <attr name="youtubeIsEffect" format="boolean"/> <!-- 동영상 특수효과 유무 -->
+        <attr name="youtubeIsRelation" format="boolean"/> <!-- 관련 영상 표시 유무 -->
+        <attr name="youtubeLoadPolicy" format="integer"/> <!-- 1로 설정시 사용자가 자막을 중지하더라도 표시 -->
+        <attr name="youtubeLangPref" format="string"/> <!-- 자막 표시 언어 코드 -->
+        <attr name="youtubeIsFullscreen" format="boolean"/> <!-- 전체 화면 표시 유무 -->
+        <attr name="youtubeIsShare" format="boolean"/> <!-- 공유하기 버튼 유무 -->
+        <attr name="youtubeSkipThumbNail" format="boolean"/> <!-- 내/외부 썸네일 처리 스킵 유무 -->
     </declare-styleable>
     ~~~
-
-*ps.안정화 완료 되면 1.0.0 올릴 예정. attribute 삭제될 파라미터가 있습니다.*
